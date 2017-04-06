@@ -19,7 +19,7 @@ int drawingMemory[numLEDSPerStrip * 6];
 //displayMemory: The memory used for display data. Use an array of "int" 6 times ledsPerStrip. 
 //drawingMemory: The memory used for drawing operations. Use either an array of "int" 6 times ledsPerStrip, or NULL to perform all drawing directly to the display memory. 
 //config: Configure the WS2811 speed and LED color order. Options are WS2811_RGB, WS2811_RBG, WS2811_GRB, WS2811_GBR, WS2811_800kHz, WS2811_400kHz. 
-OctoWS2811 leds(numLEDSPerStrip, drawingMemory, NULL, WS2811_RGB); 
+OctoWS2811 leds(numLEDSPerStrip, drawingMemory, NULL, WS2811_GRB); 
 
 void setup() {
   // initialize the digital pin as an output.
@@ -43,7 +43,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("loop");
   pinState(&demoState, &boardNum);
   if(demoState){
     //board is in demo mode, ignore communication, do LED demo test
@@ -72,7 +71,7 @@ void demo(){
 
 void colorWipe(int color)
 {
-  int LEDdelay = 200000 / leds.numPixels(); //each color wipe is in 2 seconds (200K microseconds)
+  int LEDdelay = 50000 / leds.numPixels(); //each color wipe is in .5 seconds (50K microseconds)
   
   for (int i=0; i < leds.numPixels(); i++) {
     leds.setPixel(i, color);
