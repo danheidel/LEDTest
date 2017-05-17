@@ -7,10 +7,10 @@
 const int octoPins[8] = {2, 14, 7, 8, 6, 20, 21, 5};
 const int demoPin = 19;
 bool demoState = false;
-const int boardNumPins[3] = {18, 17, 16};
+const int boardNumPins[2] = {17, 18};
 int boardNum = 0;
 
-const int numLEDSPerStrip = 120;
+const int numLEDSPerStrip = 180;
 DMAMEM int displayMemory[numLEDSPerStrip * 6];
 int drawingMemory[numLEDSPerStrip * 6];
 
@@ -29,7 +29,7 @@ void setup() {
   
   pinMode(demoPin, INPUT);
   
-  for(int i=0;i<3;i++){
+  for(int i=0;i<2;i++){
     pinMode(boardNumPins[i], INPUT);
   }
   
@@ -53,29 +53,32 @@ void loop() {
 }
 
 void pinState(bool* demoMode, int* boardNumber){
-  int ones, twos, fours;
-  *demoMode = (bool)!digitalRead(demoPin) == HIGH ? true : false;
-  ones = !digitalRead(boardNumPins[0]);
-  twos = !digitalRead(boardNumPins[1]);
-  fours = !digitalRead(boardNumPins[2]);
-  *boardNumber = ones + (twos * 2) + (fours * 4);
+  int ones, twos;
+  *demoMode = (bool)digitalRead(demoPin) == HIGH ? true : false;
+  ones = digitalRead(boardNumPins[0]);
+  twos = digitalRead(boardNumPins[1]);
+  *boardNumber = ones + (twos * 2);
 }
 
 void demo(){
   Serial.println("Demo mode");
   colorWipe(WHITE);
   colorWipe(RED);
+  colorWipe(WHITE);
   colorWipe(GREEN);
+  colorWipe(WHITE);
   colorWipe(BLUE);
 }
 
 void colorWipe(int color)
 {
-  int LEDdelay = 50000 / leds.numPixels(); //each color wipe is in .5 seconds (50K microseconds)
+  //int LEDdelay = 10000 / leds.numPixels(); //each color wipe is in .1 seconds (50K microseconds)
   
-  for (int i=0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, color);
+  for (int i=0; i < leds.numPixels(); i+=10) {
+    for(int j=0;j<10;j++){  //unrolling to increase update speed
+      leds.setPixel(i + j, color);
+    }
     leds.show();
-    delayMicroseconds(LEDdelay);
+    //delayMicroseconds(LEDdelay);  //forget delay, just go as fast as possible
   }
 }
